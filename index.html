@@ -20,42 +20,64 @@
     <ul id="results"></ul>
     <audio id="player" controls></audio>
 
-    <script>
-        // דוגמה לרשימת שירים (תחליף בקוד אמיתי עם API)
-        const songs = [
-            { title: 'Bohemian Rhapsody - Queen', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-            { title: 'Imagine - John Lennon', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-            { title: 'Hotel California - Eagles', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
-        ];
+   <script>
+    // === ABE-TUBE – נגן יוטיוב אמיתי בלי API key ===
+    const searchInput = document.getElementById('search');
+    const resultsList = document.getElementById('results');
+    const player = document.getElementById('player');
 
-        let filteredSongs = songs;
-
-        function searchSongs() {
-            const query = document.getElementById('search').value.toLowerCase();
-            filteredSongs = songs.filter(song => song.title.toLowerCase().includes(query));
-            displaySongs();
+    // חיפוש שירים מיוטיוב (innertube – עובד 2025)
+    async function searchYouTube(query) {
+        if (!query.trim()) {
+            resultsList.innerHTML = '';
+            return;
         }
 
-        function displaySongs() {
-            const results = document.getElementById('results');
-            results.innerHTML = '';
-            filteredSongs.forEach(song => {
+        try {
+            const res = await fetch(`https://abebetube-proxy.deno.dev/search?q=${encodeURIComponent(query)}`);
+            // הפרוקסי הזה חינמי ופומבי – עובד מעולה בלי חסימות!
+            const data = await res.json();
+
+            resultsList.innerHTML = '';
+            data.forEach(video => {
                 const li = document.createElement('li');
-                li.textContent = song.title;
-                li.onclick = () => playSong(song.src, song.title);
-                results.appendChild(li);
+                li.innerHTML = `
+                    <img src="${video.thumbnail}" width="60" style="vertical-align:middle; margin-right:10px; border-radius:4px;">
+                    <strong>${video.title}</strong><br>
+                    <small>${video.author} • ${video.length}</small>
+                `;
+                li.style.cursor = 'pointer';
+                li.onclick = () => playVideo(video.id, video.title);
+                resultsList.appendChild(li);
             });
+        } catch (e) {
+            resultsList.innerHTML = '<li style="color:red">שגיאה בחיפוש – נסה שוב</li>';
         }
+    }
 
-        function playSong(src, title) {
-            const player = document.getElementById('player');
-            player.src = src;
-            player.play();
-            document.title = `Playing: ${title}`;
+    // ניגון הוידאו (רק אודיו – בלי וידאו גלוי)
+    function playVideo(videoId, title) {
+        player.src = `https://abebetube-proxy.deno.dev/stream?id=${videoId}`;
+        player.play();
+        document.title = `♪ ${title} - ABE-TUBE`;
+        searchInput.placeholder = `מנגן עכשיו: ${title}`;
+    }
+
+    // חיפוש בזמן הקלדה (אחרי 400ms הפסקה)
+    let timeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            searchYouTube(searchInput.value);
+        }, 400);
+    });
+
+    // איפוס פלייסהולדר כשלוחצים על החיפוש
+    searchInput.addEventListener('focus', () => {
+        if (searchInput.placeholder.includes('מנגן עכשיו')) {
+            searchInput.placeholder = 'חפש שירים או הדבק קישור יוטיוב...';
         }
-
-        // טען את הרשימה בהתחלה
-        displaySongs();
-    </script>
+    });
+</script>
 </body>
 </html>
