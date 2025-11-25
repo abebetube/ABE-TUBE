@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABE-TUBE Music Player</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; text-align: center; padding: 20px; }
+        h1 { color: #333; }
+        #search { width: 80%; padding: 10px; margin: 10px; font-size: 16px; }
+        #results { list-style: none; padding: 0; }
+        #results li { background: white; margin: 10px; padding: 15px; border-radius: 5px; cursor: pointer; }
+        #results li:hover { background: #e0e0e0; }
+        audio { width: 100%; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🎵 Music Player - ABE-TUBE</h1>
+    <input type="text" id="search" placeholder="חפש שירים כאן... (למשל: 'Bohemian Rhapsody')" oninput="searchSongs()">
+    <ul id="results"></ul>
+    <audio id="player" controls></audio>
+
+    <script>
+        // דוגמה לרשימת שירים (תחליף בקוד אמיתי עם API)
+        const songs = [
+            { title: 'Bohemian Rhapsody - Queen', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            { title: 'Imagine - John Lennon', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            { title: 'Hotel California - Eagles', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
+        ];
+
+        let filteredSongs = songs;
+
+        function searchSongs() {
+            const query = document.getElementById('search').value.toLowerCase();
+            filteredSongs = songs.filter(song => song.title.toLowerCase().includes(query));
+            displaySongs();
+        }
+
+        function displaySongs() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            filteredSongs.forEach(song => {
+                const li = document.createElement('li');
+                li.textContent = song.title;
+                li.onclick = () => playSong(song.src, song.title);
+                results.appendChild(li);
+            });
+        }
+
+        function playSong(src, title) {
+            const player = document.getElementById('player');
+            player.src = src;
+            player.play();
+            document.title = `Playing: ${title}`;
+        }
+
+        // טען את הרשימה בהתחלה
+        displaySongs();
+    </script>
+</body>
+</html>
