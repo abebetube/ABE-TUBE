@@ -1,13 +1,6 @@
-// Top-level build file
-plugins {
-    id("com.android.application") version "8.2.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.10" apply false
-    id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
-}
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
 }
 
 android {
@@ -30,10 +23,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -67,17 +57,12 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
-    // NewPipe Extractor
-    implementation("org.schabi.newpipe:NewPipeExtractor:0.25.5") // גרסה עדכנית ל-2025
+    // NewPipe Extractor (גרסה עדכנית)
+    implementation("com.github.TeamNewPipe:NewPipeExtractor:0.25.0")
 
     // ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-media3-session:1.2.0")
-
-    // Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
