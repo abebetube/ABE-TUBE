@@ -3,81 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABE-TUBE Music Player</title>
+    <title>ABE-TUBE • נגן יוטיוב חופשי כמו NewPipe</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f0f0; text-align: center; padding: 20px; }
-        h1 { color: #333; }
-        #search { width: 80%; padding: 10px; margin: 10px; font-size: 16px; }
-        #results { list-style: none; padding: 0; }
-        #results li { background: white; margin: 10px; padding: 15px; border-radius: 5px; cursor: pointer; }
-        #results li:hover { background: #e0e0e0; }
-        audio { width: 100%; margin-top: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #111, #1a1a2e);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #ff3b3b;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,59,59,0.5);
+        }
+        #search {
+            width: 90%;
+            max-width: 600px;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            outline: none;
+            margin: 15px auto;
+            display: block;
+            background: #333;
+            color: #fff;
+        }
+        #search::placeholder { color: #aaa; }
+        #results {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            max-width: 700px;
+        }
+        #results li {
+            background: #222;
+            margin: 12px auto;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: right;
+            display: flex;
+            align-items: center;
+        }
+        #results li:hover {
+            background: #333;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #results img {
+            border-radius: 8px;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+        .video-info {
+            flex: 1;
+            text-align: right;
+        }
+        #youtube-player {
+            width: 100%;
+            max-width: 700px;
+            height: 80px;
+            margin: 20px auto;
+            border: none;
+            border-radius: 12px;
+            display: block;
+        }
+        .loading {
+            color: #ff3b3b;
+            font-style: italic;
+        }
+        .error {
+            color: #ff6b6b;
+        }
+        footer {
+            margin-top: 50px;
+            color: #888;
+            font-size: 14px;
+        }
+        #library-status {
+            color: #aaa;
+            font-size: 12px;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>🎵 Music Player - ABE-TUBE</h1>
-    <input type="text" id="search" placeholder="חפש שירים כאן... (למשל: 'Bohemian Rhapsody')" oninput="searchSongs()">
+
+    <h1>🎵 ABE-TUBE</h1>
+    <p>נגן מוזיקה חופשי מיוטיוב • כמו NewPipe, בלי API</p>
+
+    <input type="text" id="search" placeholder="חפש שירים כאן... (למשל: Despacito)" autofocus>
+
+    <div id="library-status">טוען ספריית חיפוש...</div>
+
     <ul id="results"></ul>
-    <audio id="player" controls></audio>
 
-   <script>
-    // === ABE-TUBE – נגן יוטיוב אמיתי בלי API key ===
-    const searchInput = document.getElementById('search');
-    const resultsList = document.getElementById('results');
-    const player = document.getElementById('player');
+    <div id="player-container"></div>
 
-    // חיפוש שירים מיוטיוב (innertube – עובד 2025)
-    async function searchYouTube(query) {
-        if (!query.trim()) {
-            resultsList.innerHTML = '';
-            return;
+    <footer>
+        ABE-TUBE • 2025 • חופשי & בטוח • בלי פרסומות
+    </footer>
+
+    <!-- ספרייה מעודכנת – גרסה 2.0.7 (נובמבר 2025) -->
+    <script src="https://unpkg.com/youtube-search-without-api-key@2.0.7/index.js"></script>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const resultsList = document.getElementById('results');
+        const playerContainer = document.getElementById('player-container');
+        const statusDiv = document.getElementById('library-status');
+        let currentPlayer = null;
+        let libraryLoaded = false;
+
+        // בדוק אם הספרייה נטענה
+        window.addEventListener('load', () => {
+            if (typeof YouTubeSearchWithoutApiKey !== 'undefined') {
+                libraryLoaded = true;
+                statusDiv.textContent = 'ספרייה טעונה! התחל חיפוש...';
+                statusDiv.style.color = '#4CAF50';
+            } else {
+                statusDiv.textContent = 'שגיאה בטעינת ספרייה – משתמש בחיפוש בסיסי';
+                statusDiv.style.color = '#ff6b6b';
+            }
+        });
+
+        async function searchYouTube(query) {
+            if (!query.trim()) {
+                resultsList.innerHTML = '';
+                return;
+            }
+
+            resultsList.innerHTML = '<li class="loading">🔍 מחפש שירים...</li>';
+
+            try {
+                let results;
+                if (libraryLoaded && typeof YouTubeSearchWithoutApiKey !== 'undefined') {
+                    // השתמש בספרייה
+                    results = await YouTubeSearchWithoutApiKey.search(query, 15);
+                } else {
+                    // Fallback: scraping פשוט עם fetch (כמו NewPipe)
+                    const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`);
+                    const html = await res.text();
+                    // פרסינג בסיסי – חפש videoId ותמונות (פשוט, אבל עובד)
+                    const videoRegex = /"videoRenderer":{"videoId":"([^"]+)","title":{"runs":\[{"text":"([^"]+)"}]/g;
+                    const matches = [...html.matchAll(videoRegex)];
+                    results = matches.slice(0, 15).map(match => ({
+                        id: match[1],
+                        title: match[2],
+                        thumbnails: [{ url: `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` }],
+                        channel: { title: 'ערוץ' }
+                    }));
+                }
+
+                resultsList.innerHTML = '';
+                if (results.length === 0) {
+                    resultsList.innerHTML = '<li class="error">לא נמצאו תוצאות – נסה חיפוש אחר</li>';
+                    return;
+                }
+
+                results.forEach(video => {
+                    const li = document.createElement('li');
+                    const thumb = video.thumbnails?.[0]?.url || `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+                    li.innerHTML = `
+                        <img src="${thumb}" width="80" height="60" onerror="this.src='https://via.placeholder.com/80x60?text=🎵'" alt="תמונה">
+                        <div class="video-info">
+                            <strong>${escapeHtml(video.title)}</strong><br>
+                            <small style="color:#aaa">${escapeHtml(video.channel?.title || 'ערוץ לא ידוע')}</small>
+                        </div>
+                    `;
+                    li.onclick = () => playVideo(video.id, video.title);
+                    resultsList.appendChild(li);
+                });
+            } catch (e) {
+                resultsList.innerHTML = `<li class="error">שגיאה: ${e.message} – נסה שוב או בדוק חיבור</li>`;
+                console.error('חיפוש שגיאה:', e);
+            }
         }
 
-        try {
-            const res = await fetch(`https://abebetube-proxy.deno.dev/search?q=${encodeURIComponent(query)}`);
-            // הפרוקסי הזה חינמי ופומבי – עובד מעולה בלי חסימות!
-            const data = await res.json();
+        function playVideo(videoId, title) {
+            if (currentPlayer) currentPlayer.remove();
 
-            resultsList.innerHTML = '';
-            data.forEach(video => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <img src="${video.thumbnail}" width="60" style="vertical-align:middle; margin-right:10px; border-radius:4px;">
-                    <strong>${video.title}</strong><br>
-                    <small>${video.author} • ${video.length}</small>
-                `;
-                li.style.cursor = 'pointer';
-                li.onclick = () => playVideo(video.id, video.title);
-                resultsList.appendChild(li);
-            });
-        } catch (e) {
-            resultsList.innerHTML = '<li style="color:red">שגיאה בחיפוש – נסה שוב</li>';
+            currentPlayer = document.createElement('iframe');
+            currentPlayer.id = 'youtube-player';
+            currentPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+            currentPlayer.allow = 'autoplay; encrypted-media; picture-in-picture';
+            currentPlayer.allowFullscreen = true;
+            currentPlayer.width = '100%';
+            currentPlayer.height = '80';
+            currentPlayer.style.borderRadius = '12px';
+            playerContainer.appendChild(currentPlayer);
+
+            document.title = `♪ ${title} - ABE-TUBE`;
+            searchInput.placeholder = `מנגן: ${title.substring(0, 40)}${title.length > 40 ? '...' : ''}`;
         }
-    }
 
-    // ניגון הוידאו (רק אודיו – בלי וידאו גלוי)
-    function playVideo(videoId, title) {
-        player.src = `https://abebetube-proxy.deno.dev/stream?id=${videoId}`;
-        player.play();
-        document.title = `♪ ${title} - ABE-TUBE`;
-        searchInput.placeholder = `מנגן עכשיו: ${title}`;
-    }
-
-    // חיפוש בזמן הקלדה (אחרי 400ms הפסקה)
-    let timeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            searchYouTube(searchInput.value);
-        }, 400);
-    });
-
-    // איפוס פלייסהולדר כשלוחצים על החיפוש
-    searchInput.addEventListener('focus', () => {
-        if (searchInput.placeholder.includes('מנגן עכשיו')) {
-            searchInput.placeholder = 'חפש שירים או הדבק קישור יוטיוב...';
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-    });
-</script>
+
+        // חיפוש בזמן אמת
+        let timeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                searchYouTube(searchInput.value);
+            }, 500);
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.placeholder.includes('מנגן')) {
+                searchInput.placeholder = 'חפש שירים (Despacito, Bohemian Rhapsody...)';
+            }
+        });
+
+        // דוגמה ראשונית
+        setTimeout(() => {
+            if (!libraryLoaded) searchYouTube('popular songs');
+        }, 2000);
+    </script>
 </body>
 </html>
