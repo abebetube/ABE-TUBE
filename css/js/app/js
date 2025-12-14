@@ -1,0 +1,10 @@
+function search() {
+  const q = document.getElementById("search").value;
+
+  document.getElementById("player").innerHTML = `
+    <iframe width="560" height="315"
+      src="https://www.youtube.com/embed?listType=search&list=${q}"
+      frameborder="0" allowfullscreen>
+    </iframe>
+  `;
+}
