@@ -1,11 +1,338 @@
-body {
-  font-family: Arial;
-  background: #111;
-  color: white;
-  text-align: center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-input {
-  padding: 8px;
-  width: 200px;
+body {
+    font-family: 'Heebo', sans-serif;
+    background:  #dadcd6 50%;
+    color: #140000;
+    min-height: 100vh;
+    text-emphasis-color:green;
+}
+
+
+.app-container {
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background: rgb(13, 12, 12, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgb(249, 240, 240, 0.1);
+}
+
+.header-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.0rem;
+    flex-shrink: 0;
+}
+
+.header-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.splash-logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-size-adjust:100%;
+    background: linear-gradient(180deg, #37f312 0%, #faf200 50%,red 75%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.search-container {
+    flex: 1;
+    display: flex;
+    gap: 0.5rem;
+    max-width: 500px;
+    margin:0 auto;
+    color:#ff6600;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 25px;
+    background: rgb(10, 5, 0, 0.1);
+    color: #f0870f;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    background: rgb(251, 219, 9, 0.15);
+    box-shadow: 0 0 20px rgb(7, 44, 213, 0.3);
+}
+
+#searchInput::placeholder {
+    color: rgba(green, yellow, red, 0.7);
+}
+
+.search-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #fa6705 0%, #a08813 100%);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgb(16, 240, 0, 0.4);
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.player-section {
+    width: 100%;
+    margin-bottom: 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.player-main-view {
+    display: flex;
+    flex-direction: column;
+}
+
+.video-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #d2d0d0;
+}
+
+.video-player {
+    width: 100%;
+    height: 100%;
+}
+
+.player-details-full {
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.video-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.player-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+
+
+
+
+.video-progress-container span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    min-width: 40px;
+}
+
+.welcome-message {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.welcome-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-message h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(green, yellow, red);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #8eea66,blanchedalmond;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+    margin: 0 auto 1rem;
+    color: rgba(green, yellow, red, 0.7);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+    
+}
+
+.hidden {
+    display: none !important;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.song-card {
+    background: rgb(13, 13, 13, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.song-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.song-card.playing {
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    background-color:black-70;
+}
+
+.song-thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    position: relative;
+}
+
+.song-card .play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    
+    background: rgba(red, yellow, green, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.01s ease;
+}
+
+.song-card:hover .play-overlay {
+    opacity: 1;
+}
+
+.play-overlay span {
+    font-size: 3rem;
+}
+
+.thumbnail-container {
+    position: relative;
+}
+
+.song-info {
+    padding: 1rem;
+}
+
+.song-title {
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.song-channel {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95rem;
+}
+
+.song-duration {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .search-container {
+        width: 100%;
+        max-width: none;
+        color:#ff6600;
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+    }
 }
