@@ -1,16 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <title>AbeTube</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbeTube music player </title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="splashScreen" class="splash-screen">
+    <img src="/static/logo.png" alt="AbeTube Logo" class="splash-logo">
+    </div>
 
-<input id="search" placeholder="Search YouTube" />
-<button onclick="search()">Search</button>
+    <div class="app-container">
+        <header class="header">
+           
+            <h1 class="logo">AbeTube</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search songs and start listening " autocomplete="on">
+                <button id="searchBtn" class="search-btn">search</button>
+            </div>
+            <img src="/static/logo.png" alt="Logo" class="header-logo">
+        </header>
 
-<div id="player"></div>
+        <main class="main-content">
+            <div id="playerSection" class="player-section hidden">
+                <div id="player" class="player-main-view">
+                    <div class="video-container">
+                        <video id="videoPlayer" class="video-player" playsinline controls></video>
+                        <audio id="mainAudioPlayer" style="display:none;"></audio>
+                    </div>
+                    <div class="player-details-full">
+                        <h2 id="playerTitle" class="video-title">לא מושמע כלום</h2>
+                        <div class="player-actions">
+                            <button id="prevBtn" class="action-btn">⏮️</button>
+                            <button id="playPauseBtn" class="action-btn play-btn">▶️</button>
+                            <button id="nextBtn" class="action-btn">⏭️</button>
+                        </div>
+                        <div class="video-progress-container">
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
 
-<script src="app.js"></script>
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>מחפש...</p>
+            </div>
+
+            <div id="results" class="results-grid"></div>
+
+            <div id="welcomeMessage" class="welcome-message">
+                <div class="welcome-icon">🎧</div>
+                <h2>Welcome to AbeTube</h2>
+                
+            </div>
+        </main>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+    <script>
+        // Simple Wake Lock to prevent sleep during playback
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        }
+        document.addEventListener('click', requestWakeLock);
+    </script>
+    <script src="/static/app.js"></script>
 </body>
 </html>
+
